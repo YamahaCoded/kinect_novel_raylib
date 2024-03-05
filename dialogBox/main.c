@@ -14,6 +14,35 @@ struct initText{
     bool dialogueComplete;
 };
 
+void setDefault(struct initText *dialogue){
+    dialogue->dialogueLength = strlen(dialogue->dialogue);
+    dialogue->currentLength = 0;
+    dialogue->timer = 0;
+    dialogue->dialogueComplete = false;
+}
+
+void drawDialogue(struct initText *dialogue){
+    DrawText(TextSubtext(dialogue->dialogue, 0, dialogue->currentLength), 50, 300, 20, BLACK);
+    if(!dialogue->dialogueComplete){
+        
+        dialogue->timer += GetFrameTime();
+        if(dialogue->timer >= DIALOGUE_SPEED && dialogue->currentLength < dialogue->dialogueLength){
+            dialogue->currentLength++;
+            dialogue->timer = 0;
+        }
+
+        if(dialogue->currentLength == dialogue->dialogueLength){
+            dialogue->dialogueComplete = true;
+        }
+    }else{
+        DrawText("Press enter or whatever...", 500, 400, 20, BLACK);
+        
+        if(IsKeyPressed(KEY_ENTER)){
+            setDefault(dialogue);
+        }
+    }
+}
+
 int main(void){
     const int screenWidth = 800;
     const int screenHeight = 450;
@@ -22,36 +51,14 @@ int main(void){
 
     struct initText d1;
     strcpy(d1.dialogue, "This is a boring test...");
-    d1.dialogueLength = strlen(d1.dialogue);
-    d1.currentLength = 0;
-    d1.timer = 0;
-    d1.dialogueComplete = false;
+    setDefault(&d1);
     
     SetTargetFPS(60);
 
     while(!WindowShouldClose()){
         BeginDrawing();
         ClearBackground(RAYWHITE);
-
-        DrawText(TextSubtext(d1.dialogue, 0, d1.currentLength), 50, 50, 20, BLACK);
-        if(!d1.dialogueComplete){
-            
-            d1.timer += GetFrameTime();
-            if(d1.timer >= DIALOGUE_SPEED && d1.currentLength < d1.dialogueLength){
-                d1.currentLength++;
-                d1.timer = 0;
-            }
-
-            if(d1.currentLength == d1.dialogueLength){
-                d1.dialogueComplete = true;
-            }
-        }else{
-            DrawText("Press enter or whatever...", 50, 250, 20, BLACK);
-            
-            if(IsKeyPressed(KEY_ENTER)){
-                //Do whatever you want
-            }
-        }
+        drawDialogue(&d1);
 
         EndDrawing();
     }
