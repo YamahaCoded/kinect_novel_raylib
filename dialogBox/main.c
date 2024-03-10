@@ -21,10 +21,28 @@ void setDefault(struct initText *dialogue){
     dialogue->dialogueComplete = false;
 }
 
+void updateDialogue(struct initText *dialogue){
+    static int i = 0; 
+    
+    char dialogs[5][256] = {
+        "hallo welt",
+        "hello world",
+        "ola mundo",
+        "hola mundo",
+        "konnichiha sekai"
+    };
+
+    strcpy(dialogue->dialogue, dialogs[i]);
+    i++;
+
+    if(i >= 5){
+        i = 0;
+    }
+}
+
 void drawDialogue(struct initText *dialogue){
     DrawText(TextSubtext(dialogue->dialogue, 0, dialogue->currentLength), 50, 300, 20, BLACK);
     if(!dialogue->dialogueComplete){
-        
         dialogue->timer += GetFrameTime();
         if(dialogue->timer >= DIALOGUE_SPEED && dialogue->currentLength < dialogue->dialogueLength){
             dialogue->currentLength++;
@@ -38,6 +56,7 @@ void drawDialogue(struct initText *dialogue){
         DrawText("Press enter or whatever...", 500, 400, 20, BLACK);
         
         if(IsKeyPressed(KEY_ENTER)){
+            updateDialogue(dialogue);
             setDefault(dialogue);
         }
     }
@@ -47,7 +66,7 @@ int main(void){
     const int screenWidth = 800;
     const int screenHeight = 450;
 
-    InitWindow(screenWidth, screenHeight, "RPG");
+    InitWindow(screenWidth, screenHeight, "Test");
 
     struct initText d1;
     strcpy(d1.dialogue, "This is a boring test...");
