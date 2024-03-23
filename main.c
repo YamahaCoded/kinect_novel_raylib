@@ -57,7 +57,8 @@ void updateDialogue(struct initText *dialogue){
 }
 
 void drawDialogue(struct initText *dialogue){
-    DrawText(TextSubtext(dialogue->dialogue, 0, dialogue->currentLength), 140, 420, 32, WHITE);
+    DrawText(TextSubtext(dialogue->dialogue, 0, dialogue->currentLength), 114, 412, 30, WHITE);
+
     if(!dialogue->dialogueComplete){
         dialogue->timer += GetFrameTime();
         if(dialogue->timer >= DIALOGUE_SPEED && dialogue->currentLength < dialogue->dialogueLength){
@@ -69,7 +70,7 @@ void drawDialogue(struct initText *dialogue){
             dialogue->dialogueComplete = true;
         }
     }else{
-        DrawText("Press enter or whatever...", 370, 500, 20, WHITE);
+        DrawRectangle(662, 498, 28, 28, WHITE);
         
         if(IsKeyPressed(KEY_ENTER)){
             updateDialogue(dialogue);
@@ -82,24 +83,18 @@ void drawCharacter(struct initCharacter *character){
     DrawTextureEx(character->texture, character->position, character->rotation, character->scale, character->color);
 }
 
-void makeRect(){
-    Rectangle box = { (float) (GetScreenWidth()/2 - (600 / 2)),
-                      (float) (GetScreenHeight() - (160 + 50)),
-                      600,
-                      160};
-    
-    DrawRectangleRec(box, BLACK);
-    DrawRectangleLinesEx(box, 5, BLACK);
+void drawTextRectangle(Texture2D texture){
+    DrawTextureEx(texture, (Vector2){(float)(GetScreenWidth()/2 - (640 / 2)), (float) (GetScreenHeight() - (160 + 50))}, 0, 5.0f, WHITE);
 }
 
 int main(void){
     const int screenWidth = 800;
     const int screenHeight = 600;
 
-    InitWindow(screenWidth, screenHeight, "Test");
+    InitWindow(screenWidth, screenHeight, "KN Test");
 
     struct initText d1;
-    strcpy(d1.dialogue, "ehrm...");
+    strcpy(d1.dialogue, "ehrm...\nthis is just another small test...\nhell yeah");
     setTextDefault(&d1);
     
     SetTargetFPS(60);
@@ -107,12 +102,14 @@ int main(void){
     struct initCharacter c1;
     setCharacterDefault(&c1, "./YaChan.png");
     
+    Texture2D textBoxTexture = LoadTexture("./textRectangle.png");
+
     while(!WindowShouldClose()){
         BeginDrawing();
         ClearBackground(RAYWHITE);
 
         drawCharacter(&c1);
-        makeRect();
+        drawTextRectangle(textBoxTexture);
         drawDialogue(&d1);
 
         EndDrawing();
