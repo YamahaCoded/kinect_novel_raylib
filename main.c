@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-#define MAX_DIALOGUE_LENGTH 256
+#define MAX_DIALOGUE_LENGTH 128
 #define DIALOGUE_SPEED 0.018f
 
 struct initText{
@@ -15,6 +15,7 @@ struct initText{
 };
 
 struct initCharacter{
+    char name[16];
     Texture2D texture;
     Vector2 position;
     float rotation;
@@ -37,15 +38,19 @@ void setCharacterDefault(struct initCharacter *character, char filename[]){
     character->rotation = 0;
 }
 
+void setNameDefault(struct initCharacter *character){
+    DrawText(character->name, (float)(GetScreenWidth()/2 - (575 / 2)), (float)(GetScreenHeight() - (160 + 89)), 30, WHITE);
+}
+
 void updateDialogue(struct initText *dialogue){
     static int i = 0; 
     
     char dialogs[5][256] = {
-        "hallo welt",
-        "hello world",
-        "ola mundo",
-        "hola mundo",
-        "konnichiha sekai"
+        "Hallo welt",
+        "Hello world",
+        "Olá mundo",
+        "Hola mundo",
+        "Konnichiha sekai"
     };
 
     strcpy(dialogue->dialogue, dialogs[i]);
@@ -57,7 +62,7 @@ void updateDialogue(struct initText *dialogue){
 }
 
 void drawDialogue(struct initText *dialogue){
-    DrawText(TextSubtext(dialogue->dialogue, 0, dialogue->currentLength), 114, 412, 30, WHITE);
+    DrawText(TextSubtext(dialogue->dialogue, 0, dialogue->currentLength), 114, 418, 30, WHITE);
 
     if(!dialogue->dialogueComplete){
         dialogue->timer += GetFrameTime();
@@ -87,34 +92,46 @@ void drawTextRectangle(Texture2D texture){
     DrawTextureEx(texture, (Vector2){(float)(GetScreenWidth()/2 - (640 / 2)), (float) (GetScreenHeight() - (160 + 50))}, 0, 5.0f, WHITE);
 }
 
+void drawNameRectangle(Texture2D texture){
+    DrawTextureEx(texture, (Vector2){(float)(GetScreenWidth()/2 - (640 / 2)), (float) (GetScreenHeight() - (160 + 105))}, 0, 5.0f, WHITE);
+}
+
 int main(void){
     const int screenWidth = 800;
     const int screenHeight = 600;
 
     InitWindow(screenWidth, screenHeight, "KN Test");
-
+    
     struct initText d1;
-    strcpy(d1.dialogue, "ehrm...\nthis is just another small test...\nhell yeah");
+    strcpy(d1.dialogue, "Ehrm...\nThis is just another small test...");
     setTextDefault(&d1);
     
     SetTargetFPS(60);
     
     struct initCharacter c1;
     setCharacterDefault(&c1, "./YaChan.png");
+    strcpy(c1.name, "Berry");
     
+    Texture2D nameBoxTexture = LoadTexture("./nameRectangle.png");
     Texture2D textBoxTexture = LoadTexture("./textRectangle.png");
 
     while(!WindowShouldClose()){
+        
         BeginDrawing();
         ClearBackground(RAYWHITE);
 
         drawCharacter(&c1);
+        drawNameRectangle(nameBoxTexture);
         drawTextRectangle(textBoxTexture);
+        setNameDefault(&c1);
         drawDialogue(&d1);
 
         EndDrawing();
     }
 
+    UnloadTexture(textBoxTexture);
+    UnloadTexture(nameBoxTexture);
+    UnloadTexture(c1.texture);
     CloseWindow();
 
     return 0;
